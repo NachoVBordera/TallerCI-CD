@@ -1,0 +1,214 @@
+@font-face {
+  font-family: "RadioTechnica";
+  src: url("../public/fonts/Radiotechnika.otf") format("opentype");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+}
+
+:root {
+  --background-color: #f9f9f9a2;
+  --main-font: "RadioTechnica", sans-serif;
+}
+
+body {
+  width: 100vw;
+  max-height: 100vh;
+  background-color: black;
+
+  /*   background-image: url("../public/icons/backgraund2.png");
+  background-repeat: no-repeat, repeat;
+  background-size: cover;
+  background-position: 0 -22rem; */
+}
+
+/* /////HOME PAGE///// */
+home-page {
+  width: 100vw;
+  height: 90vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 1rem;
+}
+
+/* LAST LAUNCH  */
+last-launch {
+  width: 100%;
+  height: 50%;
+}
+
+.lastLaunchArticle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  font-family: var(--main-font);
+
+  background-color: var(--background-color);
+  border-radius: 22px;
+  padding: 1rem;
+}
+
+.spanImagecontainer {
+  margin: 1rem;
+  height: 12rem;
+  width: 12rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-image: url("../public/icons/polygon.png");
+  background-repeat: no-repeat, repeat;
+  background-size: contain;
+
+  transform: scale(1.1);
+}
+
+img {
+  transform: scale(0.6);
+}
+.lastMissionSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.lastLaunchArticle > h2 {
+  margin: 1rem;
+  writing-mode: vertical-lr;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+.LastLaunchListData {
+  width: 100%;
+  height: min-content;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+
+  background-color: transparent;
+}
+
+.LastLaunchListData > li :first-child {
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+
+  margin: 1rem;
+  border-bottom: 2px solid black;
+}
+
+.LastLaunchListData > li :nth-child(2) {
+  text-align: center;
+  text-decoration: none;
+
+  color: black;
+}
+
+.launchListContainer span > :first-child {
+  color: black;
+}
+
+.LastLaunchListData a {
+  text-align: center;
+  text-overflow: ellipsis;
+
+  border: 1px solid black;
+  border-radius: 22px;
+
+  padding: 10px;
+}
+
+.LastLaunchListData a:hover {
+  color: white;
+  background-color: black;
+}
+
+/* ///////////////////////////////////// */
+
+@media (max-width: 950px) {
+  home-page {
+    height: max-content;
+
+    flex-direction: column;
+  }
+  .mainLogo {
+    height: 20%;
+    width: 100vw;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spaceXlogo {
+    transform: scale(0.5);
+  }
+  .launchesSection {
+    width: 100%;
+
+    gap: 1rem;
+  }
+
+  upcomning-launch {
+    width: 100%;
+    height: 100%;
+  }
+
+  .upcomingLaunchArticle {
+    height: 100%;
+  }
+
+  .listData {
+    flex-direction: column;
+  }
+
+  .LastLaunchListData {
+    margin-bottom: 2rem;
+  }
+
+  last-launch {
+    height: 100%;
+  }
+
+  .lastLaunchArticle {
+    height: 100%;
+    flex-direction: column;
+  }
+
+  .lastMissionSection {
+    flex-direction: column;
+  }
+
+  .lastLaunchArticle > h2 {
+    writing-mode: unset;
+    text-orientation: unset;
+    transform: none;
+  }
+
+  .LastLaunchListData {
+    width: 100%;
+    height: 100%;
+
+    flex-direction: column;
+  }
+
+  spacex-history {
+    width: 100%;
+  }
+}
