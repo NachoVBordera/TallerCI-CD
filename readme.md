@@ -106,7 +106,7 @@ Breve descripción del cambio cumpliendo lo siguiente:
 - La primera letra siempre irá en minúscula.
 - No escribir un punto al final.
 
-Cómo instlar commit-lint?
+####Cómo instlar commit-lint?
 
 1.Instalar la dependencia:
 
