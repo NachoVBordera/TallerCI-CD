@@ -6,13 +6,11 @@
 - Doker-compose
 - Firebase Console
 
-## Qué es Husky?
+## Qué es [Husky](https://typicode.github.io/husky/)?
 
 Husky es un módulo de Node.js que se integra con el sistema de control de versiones **Git** y te permite configurar acciones o scripts que se ejecutan automáticamente en ciertos momentos clave del flujo de trabajo de desarrollo.Principalmente son scripts que se ejecutan en respuesta a eventos específicos en **Git**, como antes de un commit (pre-commit), antes del push (pre-push), después de clonar un repositorio (post-clone), entre otros.
 
 Esto nos permite ejecutar pruebas automatizadas, realizar análisis de código estático, formatear el código o cualquier otra tarea que desees automatizar en tu flujo de trabajo de desarrollo.
-
-### Cómo se usa?
 
 #### Instalación
 
@@ -22,25 +20,65 @@ Esto nos permite ejecutar pruebas automatizadas, realizar análisis de código e
 npm install husky --save-dev
 ```
 
-2. Habilitar los hooks de git:
+2. Una vez instalado podremos ver en nuestro **package.json**
+   un nuevo comando con el que podremos iniciar Husky para conseguir la configuracion inicial.
 
 ```
-npx husky install
+     "scripts": {
+    [...]
+    "prepare": "husky install"
+  }
+
 ```
 
-3. Para tener automaticamente los hooks habilitados despues de instalar, edita el package.json
+Ahora podemos ejecutar
 
 ```
-npm pkg set scripts.prepare="husky install"
+npm prepare
 ```
 
-## Conventional commit
+Y este comando no creará una carpeta en la raiz del proyecto llamada **.husky** y dento otra carpeta **\_**
+donde se encuentra la configuración para poder capturar las acciones de git y realizar las acciones que queramos.
+
+3.  dentro de la carpeta **.husky** tendremos que crear 2 archivos
+    3.1 El primer archivo lo llamaremos **pre-commit** y añadiremos las siguientes linias de codigo:
+
+```
+    #!/bin/sh
+
+    . "$(dirname "$0")/\_/husky.sh"
+
+    npm test
+
+```
+
+_1. #!/bin/sh: Esta línea indica el intérprete de comandos que se utilizará para ejecutar el script, en este caso, el shell (sh)._
+
+_2. "$(dirname "$0")/*/husky.sh": Esta línea carga el script de Husky. El $(dirname "$0") obtiene la ruta del directorio actual donde se encuentra el script y */husky.sh es la ruta relativa al script de Husky. El punto (.) antes del script indica que se debe ejecutar dentro del contexto actual en lugar de lanzar un nuevo shell._
+
+_3. npm test: Esta línea ejecuta el comando npm test, que generalmente se utiliza para ejecutar las pruebas automatizadas de un proyecto de Node.js. Puede reemplazarse con cualquier otro comando o script que se desee ejecutar en un evento específico de Git. En este caso antes del commit_
+
+## Qué es [commit-lint](https://commitlint.js.org/#/)?
+
+Commitlint es una herramienta que se utiliza para validar y aplicar convenciones a los mensajes de commit en un repositorio de control de versiones, como Git. Se basa en reglas y configuraciones definidas por el equipo de desarrollo para mantener un estilo y estructura coherente en los mensajes de commit.
+
+La idea principal detrás de Commitlint es mejorar la calidad y consistencia de los mensajes de commit, lo cual puede facilitar la revisión del historial de cambios, la colaboración entre desarrolladores y la comprensión del propósito de cada commit.
+
+Commitlint se puede integrar con herramientas de control de versiones y sistemas de integración continua para validar automáticamente los mensajes de commit y rechazar aquellos que no cumplan con las reglas definidas. Esto ayuda a fomentar buenas prácticas de desarrollo y mantener la consistencia en el flujo de trabajo del equipo.
+
+Antes de continuar con la intalación me gustaria exponer las reglas de los conventional commit y que así nos sea mas sencillo trabajar con esta herramienta.
+
+#### [Conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)
+
+Los Conventional Commits es una convención para estructurar y etiquetar los mensajes de commit de manera consistente en un proyecto de desarrollo de software. Esta convención busca facilitar la comprensión y seguimiento de los cambios realizados en el repositorio.
+
+La estructura básica de un Conventional Commit consta de tres partes:
 
 ```
     <tipo>(ámbito): <descripción>
 ```
 
-### Tipo
+##### Tipo
 
 El primer elemento es el **tipo** de commit refiriéndose al contenido del commit.
 
@@ -56,14 +94,68 @@ El primer elemento es el **tipo** de commit refiriéndose al contenido del commi
 - **perf**: usado para mejoras de rendimiento.
 - **revert**: si el commit revierte un commit anterior. Debería indicarse el hash del commit que se revierte.
 
-### Ámbito
+##### Ámbito
 
 El campo ámbito es opcional y sirve para dar información contextual como por ejemplo indicar el nombre de la feature a la que afecta el commit.
 
-### Descripción
+##### Descripción
 
 Breve descripción del cambio cumpliendo lo siguiente:
 
 - Usa imperativos, en tiempo presente: “añade” mejor que “añadido” o “añadidos”.
 - La primera letra siempre irá en minúscula.
 - No escribir un punto al final.
+
+Cómo instlar commit-lint?
+
+1.Instalar la dependencia:
+
+```
+npm install --save-dev @commitlint/config-conventional @commitlint/cli
+```
+
+2. En nuestro **pakage.json** tenemos que añadir las siguientes líneas:
+
+```
+ "commitlint": {
+    "extends": "@commitlint/config-conventional"
+  },
+
+```
+
+Y nos quedaría de esta forma:
+
+```
+[...]
+  "scripts": {
+    "start": "webpack serve --config=webpack.dev.js",
+    "build": "webpack --config=webpack.prod.js",
+    "test": "jest --coverage --passWithNoTests",
+    "lint": "semistandard",
+    "prepare": "husky install"
+  },
+  "commitlint": {
+    "extends": "@commitlint/config-conventional"
+  },
+[...]
+
+```
+
+_La configuración "extends": "@commitlint/config-conventional" establece que el proyecto utilizará la configuración convencional predefinida para validar los mensajes de commit utilizando commitlint._
+
+Ahora gracias a husky podemos validar nuestros mensages de commit antes de que se ejecuten si añadimos dentro de la carpeta **.hysky** un archivo llamado **commit-msg**
+con el siguiente código:
+
+```
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx --no-install commitlint --edit $1
+
+```
+
+_Las primear líneas ya sabemos lo que hacen de el [ejemplo anterior](#qué-es-husky)_
+
+_La última línea utiliza npx para ejecutar el comando commitlint con la opción --edit. La variable $1 se utiliza para pasar argumentos al script, en este caso, el mensaje de commit. Esto permite que commitlint valide el mensaje ingresado por el usuario._
+
+**Ahora ya podemos ejecutar los test y validar nuestros mensages de commit de manera automática!!**
