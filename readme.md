@@ -2,13 +2,12 @@
 
 - Husky
 - Commit-lint
-- Docker
-- Doker-compose
+- DokerHub
 - Firebase Console
 
 ## Qué es [Husky](https://typicode.github.io/husky/)?
 
-Husky es un módulo de Node.js que se integra con el sistema de control de versiones **Git** y te permite configurar acciones o scripts que se ejecutan automáticamente en ciertos momentos clave del flujo de trabajo de desarrollo.Principalmente son scripts que se ejecutan en respuesta a eventos específicos en **Git**, como antes de un commit (pre-commit), antes del push (pre-push), después de clonar un repositorio (post-clone), entre otros.
+Husky es un módulo de Node.js que se integra con el sistema de control de versiones **Git** y te permite configurar acciones o scripts que se ejecutan automáticamente en ciertos momentos clave del flujo de trabajo de desarrollo. Principalmente son scripts que se ejecutan en respuesta a eventos específicos en **Git**, como antes de un commit (pre-commit), antes del push (pre-push), después de clonar un repositorio (post-clone), entre otros.
 
 Esto nos permite ejecutar pruebas automatizadas, realizar análisis de código estático, formatear el código o cualquier otra tarea que desees automatizar en tu flujo de trabajo de desarrollo.
 
@@ -37,11 +36,11 @@ Ahora podemos ejecutar
 npm prepare
 ```
 
-Y este comando no creará una carpeta en la raiz del proyecto llamada **.husky** y dento otra carpeta **\_**
+Y este comando no creará una carpeta en la raiz del proyecto llamada **.husky** y dentro otra carpeta **\_**
 donde se encuentra la configuración para poder capturar las acciones de git y realizar las acciones que queramos.
 
 3.  dentro de la carpeta **.husky** tendremos que crear 2 archivos
-    3.1 El primer archivo lo llamaremos **pre-commit** y añadiremos las siguientes linias de codigo:
+    3.1 El primer archivo lo llamaremos **pre-commit** y añadiremos las siguientes líneas de codigo:
 
 ```
     #!/bin/sh
@@ -66,7 +65,7 @@ La idea principal detrás de Commitlint es mejorar la calidad y consistencia de 
 
 Commitlint se puede integrar con herramientas de control de versiones y sistemas de integración continua para validar automáticamente los mensajes de commit y rechazar aquellos que no cumplan con las reglas definidas. Esto ayuda a fomentar buenas prácticas de desarrollo y mantener la consistencia en el flujo de trabajo del equipo.
 
-Antes de continuar con la intalación me gustaria exponer las reglas de los conventional commit y que así nos sea mas sencillo trabajar con esta herramienta.
+Antes de continuar con la instalación me gustaria exponer las reglas de los Conventional Commit y que así nos sea mas sencillo trabajar con esta herramienta.
 
 #### [Conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)
 
@@ -106,7 +105,7 @@ Breve descripción del cambio cumpliendo lo siguiente:
 - La primera letra siempre irá en minúscula.
 - No escribir un punto al final.
 
-#### Cómo instlar commit-lint?
+#### Cómo instalar commit-lint?
 
 1.Instalar la dependencia:
 
@@ -114,7 +113,7 @@ Breve descripción del cambio cumpliendo lo siguiente:
 npm install --save-dev @commitlint/config-conventional @commitlint/cli
 ```
 
-2. En nuestro **pakage.json** tenemos que añadir las siguientes líneas:
+2. En nuestro **package.json** tenemos que añadir las siguientes líneas:
 
 ```
  "commitlint": {
@@ -143,7 +142,7 @@ Y nos quedaría de esta forma:
 
 _La configuración "extends": "@commitlint/config-conventional" establece que el proyecto utilizará la configuración convencional predefinida para validar los mensajes de commit utilizando commitlint._
 
-Ahora gracias a husky podemos validar nuestros mensages de commit antes de que se ejecuten si añadimos dentro de la carpeta **.hysky** un archivo llamado **commit-msg**
+Ahora gracias a husky podemos validar nuestros mensajes de commit antes de que se ejecuten si añadimos dentro de la carpeta **.husky** un archivo llamado **commit-msg**
 con el siguiente código:
 
 ```
@@ -154,8 +153,55 @@ npx --no-install commitlint --edit $1
 
 ```
 
-_Las primear líneas ya sabemos lo que hacen de el [ejemplo anterior](#qué-es-husky)_
+_Las primeras líneas ya sabemos lo que hacen de el [ejemplo anterior](#qué-es-husky)_
 
 _La última línea utiliza npx para ejecutar el comando commitlint con la opción --edit. La variable $1 se utiliza para pasar argumentos al script, en este caso, el mensaje de commit. Esto permite que commitlint valide el mensaje ingresado por el usuario._
 
-**Ahora ya podemos ejecutar los test y validar nuestros mensages de commit de manera automática!!**
+**Ahora ya podemos ejecutar los test y validar nuestros mensajes de commit de manera automática!!**
+
+## PIPELINE
+
+Un pipeline es una serie de pasos automatizados que se ejecutan para construir, probar y desplegar un proyecto de software. Ofrece un enfoque estructurado y automatizado para gestionar el ciclo de vida del desarrollo de software, lo que permite una entrega más rápida y confiable de aplicaciones y actualizaciones.
+
+En GitLab sigue la siguiente estructura:
+
+```
+stages:
+  -
+  -
+  -
+build:
+  stage:
+  image:
+  script:
+    -
+    -
+  dependencies:
+    -
+  artifacts(?):
+    paths:
+      -
+```
+
+Para el stage de Docker necesitaremos lo siguiente:
+
+```
+deploy:
+  stage: Deploy
+  image: docker:20.10.14-alpine3.15
+  dependencies:
+    - build
+
+  services:
+    - docker:dind
+  before_script:
+    - 'PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: ''{ print $2 }'' | sed ''s/[",]//g'' | tr -d ''[[:space:]]'')'
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS
+  script:
+    - docker build -t $DOCKER_HUB_USER/$CI_PROJECT_NAME:$PACKAGE_VERSION .
+    - docker push $DOCKER_HUB_USER/$CI_PROJECT_NAME:$PACKAGE_VERSION
+```
+
+_'services: - docker:dind': Aquí se especifica el servicio de Docker en Docker (dind) que se utilizará para ejecutar los comandos de Docker dentro del contenedor de CI._
+
+_'PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: ''{ print $2 }'' | sed ''s/[",]//g'' | tr -d ''[[:space:]]'')': Esta línea de código extrae la versión del paquete desde un archivo package.json y la almacena en la variable PACKAGE_VERSION._
